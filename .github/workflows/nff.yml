@@ -1,33 +1,40 @@
 name: Oppdater NFF-data daglig
+
 on:
   schedule:
-    - cron: "5 2 * * *"   # hver natt ca. 02:05 UTC+1/2
-  workflow_dispatch:
+    - cron: "5 2 * * *"   # kjør hver natt ca. 02:05 UTC (03/04 norsk tid)
+  workflow_dispatch:       # gjør at du kan kjøre den manuelt fra Actions-fanen
 
 permissions:
-  contents: write   # trengs for å pushe oppdatert JSON
+  contents: write          # trengs for å committe elvebyen.json
 
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Sjekk ut repo
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Sett opp Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      # Bruk npm install (ikke npm ci) siden vi ikke har package-lock.json
-      - run: npm install
+      - name: Installer avhengigheter
+        run: npm install
 
-      # Kjør skriptet som henter tabell/kamper og skriver data/elvebyen.json
-      - run: node fetch_nff.js
+      - name: Hent NFF-data (tabell + kamper)
+        run: node fetch_nff.js
 
-      # Commit og push oppdatert JSON tilbake til repoet
-      - name: Commit updated JSON
+      - name: Vis litt av JSON i loggen (debug)
+        run: |
+          echo "Første 40 linjer av data/elvebyen.json:"
+          head -n 40 data/elvebyen.json || true
+
+      - name: Commit oppdatert JSON
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/elvebyen.json
-          git commit -m "Auto-update NFF data" || echo "No changes"
+          git commit -m "Auto-update NFF data" || echo "Ingen endringer"
           git push
