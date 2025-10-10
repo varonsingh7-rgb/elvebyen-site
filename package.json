@@ -1,0 +1,14 @@
+{
+  "name": "elvebyen-site",
+  "private": true,
+  "scripts": {
+    "prebuild": "node fetch_nff.js",
+    "build": "echo \"static build\""
+  },
+  "dependencies": {
+    "axios": "^1.6.8",
+    "cheerio": "^1.0.0",
+    "dayjs": "^1.11.10",
+    "fs-extra": "^11.2.0"
+  }
+}
