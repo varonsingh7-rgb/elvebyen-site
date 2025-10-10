@@ -1,6 +1,5 @@
 /*
- * Elvebyen – robust NFF-henter
- * Leser TABELL + KAMPER fra riktig underside og finner kolonner via tabell-headere.
+ * Elvebyen – robust NFF-henter (med bedre feilmeldinger)
  */
 
 const axios = require("axios");
@@ -11,118 +10,149 @@ const path = require("path");
 
 const TABELL_URL = "https://www.fotball.no/fotballdata/turnering/hjem/?fiksId=200088&underside=tabell";
 const KAMPER_URL = "https://www.fotball.no/fotballdata/turnering/hjem/?fiksId=200088&underside=kamper";
-const CLUB_NAME = "Elvebyen FK";
+const CLUB_NAME  = "Elvebyen FK";
 const OUTPUT_JSON = path.join(__dirname, "data", "elvebyen.json");
 
+const UA = { headers: { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36" } };
 const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
-const n = (s) => {
-  const x = parseInt(String(s || "").replace(/[^0-9-]/g, ""), 10);
-  return Number.isNaN(x) ? 0 : x;
-};
+const n = (s) => { const x = parseInt(String(s||"").replace(/[^0-9-]/g,""),10); return Number.isNaN(x) ? 0 : x; };
 
-/* ---------------- TABELL ---------------- */
+// Hjelper: finn tabell + kolonneindekser robust
+function findTableWithHeader($, wantHeaders=[]) {
+  const tables = $("table");
+  let found = null;
+  tables.each((_, t) => {
+    const ths = $(t).find("thead th");
+    if (!ths.length) return;
+    const headers = [];
+    ths.each((i, th) => headers.push(clean($(th).text()).toLowerCase()));
+    // Sjekk at minst halvparten av ønskede headere finnes
+    const hits = wantHeaders.filter(w => headers.some(h => h === w || h.includes(w))).length;
+    if (hits >= Math.ceil(wantHeaders.length/2)) {
+      found = { el: $(t), headers };
+      return false; // break
+    }
+  });
+  return found;
+}
+
+/* ========== TABELL ========== */
 async function fetchTable() {
-  const { data: html } = await axios.get(TABELL_URL, { headers: { "User-Agent": "Mozilla/5.0" } });
+  const { data: html } = await axios.get(TABELL_URL, UA);
   const $ = cheerio.load(html);
 
-  const tableEl = $("table").first();
-  if (!tableEl.length) throw new Error("Fant ingen tabell på TABELL_URL");
+  // Finn tabell som ligner på standings
+  let t = findTableWithHeader($, ["lag","poeng","s","v","u","t","+","-","+/-"]);
+  if (!t) {
+    // fallback: første tabell med mange rader
+    const el = $("table").first();
+    if (!el.length) throw new Error("Fant ingen tabell på tabell-siden.");
+    t = { el, headers: [] };
+  }
 
-  // Finn kolonneindekser ved å lese <th>-ene
-  const headers = [];
-  tableEl.find("thead th").each((i, th) => headers.push(clean($(th).text()).toLowerCase()));
-
-  // typisk: ["#", "lag", "s", "v", "u", "t", "+", "-", "+/-", "poeng"]
-  const idx = (name, fallbacks = []) => {
-    const names = [name, ...fallbacks].map((x) => x.toLowerCase());
+  // Lag indeksoppslag
+  const headers = t.headers;
+  const idx = (name, alt=[]) => {
+    const names = [name, ...alt].map(x => x.toLowerCase());
     for (const nm of names) {
-      const j = headers.findIndex((h) => h === nm || h.includes(nm));
+      const j = headers.findIndex(h => h === nm || h.includes(nm));
       if (j !== -1) return j;
     }
     return -1;
   };
 
-  const iLag = idx("lag");
-  const iS   = idx("s", ["spilt","kamper"]);
-  const iV   = idx("v", ["seire"]);
-  const iU   = idx("u", ["uavgjort"]);
-  const iT   = idx("t", ["tap"]);
-  const iPlus = idx("+", ["mål+","for"]);
-  const iMinus = idx("-", ["mål-","mot"]);
-  const iPoeng = idx("poeng", ["p"]);
+  let iLag = idx("lag");
+  let iS   = idx("s",["spilt","kamper"]);
+  let iV   = idx("v",["seire"]);
+  let iU   = idx("u",["uavgjort"]);
+  let iT   = idx("t",["tap"]);
+  let iPlus = idx("+",["mål+","for"]);
+  let iMinus= idx("-",["mål-","mot"]);
+  let iPoeng= idx("poeng",["p"]);
 
-  if (iLag === -1 || iS === -1 || iV === -1 || iU === -1 || iT === -1 || iPlus === -1 || iMinus === -1 || iPoeng === -1) {
-    throw new Error("Klarte ikke å gjenkjenne kolonne-headere på tabellsiden.");
-  }
+  // hvis ingen headere: anta standard rekkefølge
+  const assume = (i, def) => i === -1 ? def : i;
+  iLag   = assume(iLag, 1);
+  iS     = assume(iS,   2);
+  iV     = assume(iV,   3);
+  iU     = assume(iU,   4);
+  iT     = assume(iT,   5);
+  iPlus  = assume(iPlus,6);
+  iMinus = assume(iMinus,7);
+  iPoeng = assume(iPoeng, headers.length ? headers.length-1 : 9);
 
   const out = [];
-  tableEl.find("tbody tr").each((_, tr) => {
+  t.el.find("tbody tr").each((_, tr) => {
     const tds = $(tr).find("td");
     if (!tds.length) return;
-
     const team = clean(tds.eq(iLag).text());
     if (!team) return;
-
     const p  = n(tds.eq(iS).text());
     const v  = n(tds.eq(iV).text());
     const u  = n(tds.eq(iU).text());
-    const t  = n(tds.eq(iT).text());
+    const tt = n(tds.eq(iT).text());
     const gm = n(tds.eq(iPlus).text());
     const ga = n(tds.eq(iMinus).text());
     const gd = gm - ga;
-    const pts = n(tds.eq(iPoeng).text());
-
-    out.push({ team, p, v, u, t, gm, ga, gd, pts });
+    const pts= n(tds.eq(iPoeng).text());
+    out.push({ team, p, v, u, t: tt, gm, ga, gd, pts });
   });
 
+  if (!out.length) throw new Error("Tabell: Fant ingen rader – markup har trolig endret seg.");
   return out;
 }
 
-/* ---------------- TERMINLISTE ---------------- */
+/* ========== KAMPER ========== */
 async function fetchMatches() {
-  const { data: html } = await axios.get(KAMPER_URL, { headers: { "User-Agent": "Mozilla/5.0" } });
+  const { data: html } = await axios.get(KAMPER_URL, UA);
   const $ = cheerio.load(html);
 
-  const tableEl = $("table").first();
-  if (!tableEl.length) throw new Error("Fant ingen kamptabell på KAMPER_URL");
+  let t = findTableWithHeader($, ["dato","tid","hjemmelag","bortelag","bane","resultat"]);
+  if (!t) {
+    const el = $("table").first();
+    if (!el.length) throw new Error("Fant ingen kamptabell på kampsiden.");
+    t = { el, headers: [] };
+  }
 
-  const headers = [];
-  tableEl.find("thead th").each((i, th) => headers.push(clean($(th).text()).toLowerCase()));
-
-  // typisk: ["runde", "dato", "tid", "hjemmelag", "bortelag", "bane", "resultat"]
-  const idx = (name, fallbacks = []) => {
-    const names = [name, ...fallbacks].map((x) => x.toLowerCase());
+  const headers = t.headers;
+  const idx = (name, alt=[]) => {
+    const names = [name, ...alt].map(x => x.toLowerCase());
     for (const nm of names) {
-      const j = headers.findIndex((h) => h === nm || h.includes(nm));
+      const j = headers.findIndex(h => h === nm || h.includes(nm));
       if (j !== -1) return j;
     }
     return -1;
   };
 
-  const iDato   = idx("dato", ["dag"]);
-  const iTid    = idx("tid", ["kl"]);
-  const iHome   = idx("hjemmelag", ["hjemme"]);
-  const iAway   = idx("bortelag", ["borte"]);
-  const iBane   = idx("bane", ["arena","sted"]);
-  const iRes    = idx("resultat", ["res"]);
+  // Mange lister har først en "Runde"-kolonne → vi identifiserer kolonner via headere når mulig
+  let iDato = idx("dato",["dag"]);
+  let iTid  = idx("tid",["kl"]);
+  let iHome = idx("hjemmelag",["hjemme"]);
+  let iAway = idx("bortelag",["borte"]);
+  let iBane = idx("bane",["arena","sted"]);
+  let iRes  = idx("resultat",["res"]);
 
-  if (iDato === -1 || iTid === -1 || iHome === -1 || iAway === -1 || iBane === -1) {
-    throw new Error("Klarte ikke å gjenkjenne kolonne-headere på terminlista.");
-  }
+  // Fallback hvis thead mangler: anta [Runde, Dato, Tid, Hjemme, Borte, Bane, Resultat?]
+  const assume = (i, def) => i === -1 ? def : i;
+  iDato = assume(iDato, 1);
+  iTid  = assume(iTid,  2);
+  iHome = assume(iHome, 3);
+  iAway = assume(iAway, 4);
+  iBane = assume(iBane, 5);
 
   const out = [];
-  tableEl.find("tbody tr").each((_, tr) => {
+  t.el.find("tbody tr").each((_, tr) => {
     const tds = $(tr).find("td");
-    if (!tds.length) return;
+    if (tds.length < 6) return;
 
     const dateText = clean(tds.eq(iDato).text());
     const timeText = clean(tds.eq(iTid).text());
     const home = clean(tds.eq(iHome).text());
     const away = clean(tds.eq(iAway).text());
-    const venue = clean(tds.eq(iBane).text());
+    const venue= clean(tds.eq(iBane).text());
 
-    let homeGoals = null, awayGoals = null;
-    if (iRes !== -1) {
+    let homeGoals=null, awayGoals=null;
+    if (iRes !== -1 && tds.eq(iRes).length) {
       const resText = clean(tds.eq(iRes).text());
       const m = resText.match(/(\d+)\s*-\s*(\d+)/);
       if (m) { homeGoals = n(m[1]); awayGoals = n(m[2]); }
@@ -132,30 +162,35 @@ async function fetchMatches() {
     const iso = dayjs(dtRaw, ["DD.MM.YYYY HH:mm","DD.MM.YYYY H:mm","YYYY-MM-DD HH:mm"], true);
     const kickoff = iso.isValid() ? iso.toISOString() : null;
 
-    out.push({ dateText, timeText, kickoff, home, away, venue, homeGoals, awayGoals });
+    if (home || away) out.push({ dateText, timeText, kickoff, home, away, venue, homeGoals, awayGoals });
   });
 
+  if (!out.length) throw new Error("Kamper: Fant ingen rader – markup har trolig endret seg.");
   return out;
 }
 
-/* ---------------- MERGE & LAGRING ---------------- */
+/* ========== MERGE & LAGRE ========== */
 (async () => {
   try {
+    console.log("🔎 Henter tabell fra:", TABELL_URL);
     const table = await fetchTable();
+    console.log("   OK, lag:", table.length);
+
+    console.log("🔎 Henter kamper fra:", KAMPER_URL);
     const matches = await fetchMatches();
+    console.log("   OK, kamper:", matches.length);
 
     const now = dayjs();
     const upcoming = matches.filter(m => !m.kickoff || dayjs(m.kickoff).isAfter(now)).slice(0, 20);
     const played   = matches.filter(m => m.homeGoals != null && m.awayGoals != null).slice(-20);
-    const myMatches = matches.filter(m => [m.home, m.away].some(x => (x || "").toLowerCase().includes(CLUB_NAME.toLowerCase())));
+    const myMatches= matches.filter(m => [m.home,m.away].some(x => (x||"").toLowerCase().includes(CLUB_NAME.toLowerCase())));
 
     const existing = await fs.pathExists(OUTPUT_JSON) ? await fs.readJson(OUTPUT_JSON) : {};
     const next = { ...existing, table, matches: { all: matches, upcoming, played }, myMatches };
 
     await fs.ensureFile(OUTPUT_JSON);
     await fs.writeJson(OUTPUT_JSON, next, { spaces: 2 });
-
-    console.log(`✅ Lagret tabell (${table.length}) og kamper (${matches.length}) → ${OUTPUT_JSON}`);
+    console.log(`✅ Lagret til ${OUTPUT_JSON}`);
   } catch (e) {
     console.error("❌ FEIL:", e.message);
     process.exit(1);
