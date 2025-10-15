@@ -2,112 +2,112 @@
   "table": [
     {
       "team": "Huringen",
-      "p": 17,
-      "v": 15,
+      "p": 18,
+      "v": 16,
       "u": 1,
       "t": 1,
-      "gm": 85,
-      "ga": 46,
-      "gd": 39,
-      "pts": 46
+      "gm": 91,
+      "ga": 49,
+      "gd": 42,
+      "pts": 49
     },
     {
       "team": "Elvebyen FK",
-      "p": 17,
+      "p": 18,
       "v": 13,
       "u": 0,
-      "t": 4,
-      "gm": 73,
+      "t": 5,
+      "gm": 74,
       "ga": 39,
-      "gd": 34,
+      "gd": 35,
       "pts": 39
     },
     {
       "team": "Nordre Sande/Sande 2",
-      "p": 17,
+      "p": 18,
       "v": 9,
       "u": 2,
-      "t": 6,
-      "gm": 60,
+      "t": 7,
+      "gm": 64,
       "ga": 29,
-      "gd": 31,
+      "gd": 35,
       "pts": 29
     },
     {
+      "team": "Kjappen 2",
+      "p": 18,
+      "v": 9,
+      "u": 1,
+      "t": 8,
+      "gm": 66,
+      "ga": 28,
+      "gd": 38,
+      "pts": 28
+    },
+    {
       "team": "Skoger 2",
-      "p": 17,
+      "p": 18,
       "v": 8,
       "u": 2,
-      "t": 7,
-      "gm": 56,
+      "t": 8,
+      "gm": 58,
       "ga": 26,
-      "gd": 30,
+      "gd": 32,
       "pts": 26
     },
     {
-      "team": "Kjappen 2",
-      "p": 17,
-      "v": 8,
-      "u": 1,
-      "t": 8,
-      "gm": 58,
-      "ga": 25,
-      "gd": 33,
-      "pts": 25
-    },
-    {
       "team": "Steinberg 2",
-      "p": 17,
-      "v": 7,
+      "p": 18,
+      "v": 8,
       "u": 2,
       "t": 8,
-      "gm": 44,
-      "ga": 23,
-      "gd": 21,
-      "pts": 23
+      "gm": 48,
+      "ga": 26,
+      "gd": 22,
+      "pts": 26
     },
     {
       "team": "Sjåstad V. Lier/Sylling",
-      "p": 17,
-      "v": 7,
+      "p": 18,
+      "v": 8,
       "u": 1,
       "t": 9,
-      "gm": 34,
-      "ga": 22,
+      "gm": 37,
+      "ga": 25,
       "gd": 12,
-      "pts": 22
+      "pts": 25
     },
     {
       "team": "Mjøndalen 3",
-      "p": 17,
+      "p": 18,
       "v": 6,
       "u": 2,
-      "t": 9,
-      "gm": 29,
+      "t": 10,
+      "gm": 32,
       "ga": 20,
-      "gd": 9,
+      "gd": 12,
       "pts": 20
     },
     {
       "team": "Slemmestad 2",
-      "p": 17,
-      "v": 4,
+      "p": 18,
+      "v": 5,
       "u": 1,
       "t": 12,
-      "gm": 32,
-      "ga": 13,
+      "gm": 35,
+      "ga": 16,
       "gd": 19,
-      "pts": 13
+      "pts": 16
     },
     {
       "team": "Vikåsen",
-      "p": 17,
+      "p": 18,
       "v": 1,
       "u": 2,
-      "t": 14,
-      "gm": 15,
+      "t": 15,
+      "gm": 17,
       "ga": 5,
-      "gd": 10,
+      "gd": 12,
       "pts": 5
     }
   ],
@@ -970,8 +970,8 @@
         "home": "Skoger 2",
         "away": "Sjåstad V. Lier/Sylling",
         "venue": "Skoger stadion",
-        "homeGoals": null,
-        "awayGoals": null
+        "homeGoals": 2,
+        "awayGoals": 3
       },
       {
         "dateText": "14.10.2025",
@@ -980,8 +980,8 @@
         "home": "Nordre Sande/Sande 2",
         "away": "Huringen",
         "venue": "Nordre Sande Kunstgress",
-        "homeGoals": null,
-        "awayGoals": null
+        "homeGoals": 4,
+        "awayGoals": 6
       },
       {
         "dateText": "14.10.2025",
@@ -990,8 +990,8 @@
         "home": "Kjappen 2",
         "away": "Mjøndalen 3",
         "venue": "Bragerøen KG",
-        "homeGoals": null,
-        "awayGoals": null
+        "homeGoals": 8,
+        "awayGoals": 3
       },
       {
         "dateText": "14.10.2025",
@@ -1000,8 +1000,8 @@
         "home": "Vikåsen",
         "away": "Steinberg 2",
         "venue": "Vikåsen Kunstgress",
-        "homeGoals": null,
-        "awayGoals": null
+        "homeGoals": 2,
+        "awayGoals": 4
       },
       {
         "dateText": "14.10.2025",
@@ -1010,8 +1010,8 @@
         "home": "Slemmestad 2",
         "away": "Elvebyen FK",
         "venue": "Slemmestad stadion",
-        "homeGoals": null,
-        "awayGoals": null
+        "homeGoals": 3,
+        "awayGoals": 1
       }
     ],
     "upcoming": [
@@ -1218,56 +1218,6 @@
     ],
     "played": [
       {
-        "dateText": "15.09.2025",
-        "timeText": "19:30",
-        "kickoff": null,
-        "home": "Steinberg 2",
-        "away": "Sjåstad V. Lier/Sylling",
-        "venue": "Bakke Kunstgress",
-        "homeGoals": 3,
-        "awayGoals": 2
-      },
-      {
-        "dateText": "15.09.2025",
-        "timeText": "20:00",
-        "kickoff": null,
-        "home": "Vikåsen",
-        "away": "Elvebyen FK",
-        "venue": "Vikåsen Kunstgress",
-        "homeGoals": 1,
-        "awayGoals": 6
-      },
-      {
-        "dateText": "15.09.2025",
-        "timeText": "20:00",
-        "kickoff": null,
-        "home": "Nordre Sande/Sande 2",
-        "away": "Slemmestad 2",
-        "venue": "Nordre Sande Kunstgress",
-        "homeGoals": 6,
-        "awayGoals": 2
-      },
-      {
-        "dateText": "16.09.2025",
-        "timeText": "20:00",
-        "kickoff": null,
-        "home": "Kjappen 2",
-        "away": "Skoger 2",
-        "venue": "Bragerøen KG",
-        "homeGoals": 4,
-        "awayGoals": 4
-      },
-      {
-        "dateText": "16.09.2025",
-        "timeText": "20:15",
-        "kickoff": null,
-        "home": "Mjøndalen 3",
-        "away": "Huringen",
-        "venue": "Consto Arena",
-        "homeGoals": 2,
-        "awayGoals": 4
-      },
-      {
         "dateText": "21.09.2025",
         "timeText": "15:00",
         "kickoff": null,
@@ -1414,6 +1364,56 @@
         "home": "Elvebyen FK",
         "away": "Skoger 2",
         "venue": "Fjell kunstgress",
+        "homeGoals": 3,
+        "awayGoals": 1
+      },
+      {
+        "dateText": "14.10.2025",
+        "timeText": "20:00",
+        "kickoff": null,
+        "home": "Skoger 2",
+        "away": "Sjåstad V. Lier/Sylling",
+        "venue": "Skoger stadion",
+        "homeGoals": 2,
+        "awayGoals": 3
+      },
+      {
+        "dateText": "14.10.2025",
+        "timeText": "20:00",
+        "kickoff": null,
+        "home": "Nordre Sande/Sande 2",
+        "away": "Huringen",
+        "venue": "Nordre Sande Kunstgress",
+        "homeGoals": 4,
+        "awayGoals": 6
+      },
+      {
+        "dateText": "14.10.2025",
+        "timeText": "20:00",
+        "kickoff": null,
+        "home": "Kjappen 2",
+        "away": "Mjøndalen 3",
+        "venue": "Bragerøen KG",
+        "homeGoals": 8,
+        "awayGoals": 3
+      },
+      {
+        "dateText": "14.10.2025",
+        "timeText": "20:00",
+        "kickoff": null,
+        "home": "Vikåsen",
+        "away": "Steinberg 2",
+        "venue": "Vikåsen Kunstgress",
+        "homeGoals": 2,
+        "awayGoals": 4
+      },
+      {
+        "dateText": "14.10.2025",
+        "timeText": "20:00",
+        "kickoff": null,
+        "home": "Slemmestad 2",
+        "away": "Elvebyen FK",
+        "venue": "Slemmestad stadion",
         "homeGoals": 3,
         "awayGoals": 1
       }
@@ -1597,8 +1597,8 @@
       "home": "Slemmestad 2",
       "away": "Elvebyen FK",
       "venue": "Slemmestad stadion",
-      "homeGoals": null,
-      "awayGoals": null
+      "homeGoals": 3,
+      "awayGoals": 1
     }
   ]
 }
