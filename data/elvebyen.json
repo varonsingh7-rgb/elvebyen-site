@@ -1066,16 +1066,6 @@
         "awayGoals": 4
       },
       {
-        "dateText": "12.05.2025",
-        "timeText": "20:00",
-        "kickoff": "2025-12-05T20:00:00.000Z",
-        "home": "Elvebyen FK",
-        "away": "Mjøndalen 3",
-        "venue": "Fjell kunstgress",
-        "homeGoals": 8,
-        "awayGoals": 1
-      },
-      {
         "dateText": "13.05.2025",
         "timeText": "20:00",
         "kickoff": null,
@@ -1214,6 +1204,16 @@
         "venue": "Skoger stadion",
         "homeGoals": 3,
         "awayGoals": 0
+      },
+      {
+        "dateText": "16.06.2025",
+        "timeText": "20:00",
+        "kickoff": null,
+        "home": "Vikåsen",
+        "away": "Mjøndalen 3",
+        "venue": "Vikåsen Kunstgress",
+        "homeGoals": 1,
+        "awayGoals": 1
       }
     ],
     "played": [
